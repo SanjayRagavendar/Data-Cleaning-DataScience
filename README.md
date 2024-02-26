@@ -26,235 +26,117 @@ STEP 6: Use zscore of to remove outliers
 # Developed By: Sanjay Ragavendar M K
 # Register Number: 212222100045
 ```
-<table>
-  <tr>
-    <td width=50%>
-
-
-### 1) Read and display DataFrame
-```Python
+## DATA CLEANING
+```py
 import pandas as pd
-df=pd.read_csv('/content/SAMPLEDS.csv')
-df
+import numpy as np
+import matplotlib.pyplot as plt
+data = pd.read_csv("/content/SAMPLEIDS.csv")
+data.head()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/84fd997a-508e-4ad0-9364-a5a340049de2)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-              
-### 2) Display head
-```Python
-df.head()
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/2e6f57eb-a0eb-46c0-80b6-78ef2ff9c3b4)
+
+```py
+data = pd.get_dummies(data)
+data.isnull().sum()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/f8d966b2-943e-4438-ba6d-237c83ecab2b)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 3) Display tail
-```Python
-df.tail()
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/b11b71a8-0335-4acf-8e69-555a75bacf24)
+```py
+columns_with_null = data.columns[data.isnull().any()]
+import seaborn as sns
+plt.figure(figsize=(10,10))
+sns.barplot(columns_with_null)
+plt.title("NULL VALUES")
+plt.show()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/9ad3c798-1e37-41a6-8854-2bca1d8bbce4)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 4) Info about dataframe
-```Python
-df.info()
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/deddaf55-87f4-42dc-b4ce-280775cc04b5)
+```py
+for column in columns_with_null:
+    median = data[column].median()  
+    data[column].fillna(median, inplace=True)
+data.isnull().sum().sum()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/5636ffde-4bb3-4f4b-979f-f81fe1ee00bd)
 
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/71c0f834-5412-4683-9470-621927f9c8e6)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 5) Description about the dataframe
-```Python
-df.describe()
+## IQR
+```py
+import pandas as pd
+import seaborn as sns
+ir = pd.read_csv("/content/iris (1).csv")
+ir.head()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/dafd1fe1-c67c-4d41-a676-901ea7969a16)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 6) Shape of the dataframe
-```Python
-df.shape
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/93d4d44c-8a8e-42ba-b50e-0d427a929e41)
+```py
+ir.describe()
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/de7ce1fa-865b-401f-88fa-0fd43b37d999)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 7) Checking tha NUll values
-```Python
-df.isnull().sum()
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/82718575-7497-43ea-b6b0-0c048b061dd6)
+```py
+sns.boxplot(x='sepal_width',data=ir)
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/d60e8fd8-4ba3-400a-83b3-d7fdeea0e724)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 8) Drop the Null values
-```Python
-x=df.dropna(how='any')
-x
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/2a264b0b-1be7-4cb5-993a-edfb54c7369d)
+```py
+c1=ir.sepal_width.quantile(0.25)
+c3=ir.sepal_width.quantile(0.75)
+iq=c3-c1
+print(c3)
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/1c0aa411-13a1-493b-95e7-647585a6ac46)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 9) Drop the Null values in Total
-```Python
-tot=df.dropna(subset=['TOTAL'],how='any')
-tot
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/ec87fae6-5baa-4b0a-9c09-1c4e1c893ad8)
+```py
+rid=ir[((ir.sepal_width<(c1-1.5*iq))|(ir.sepal_width>(c3+1.5*iq)))]
+rid['sepal_width']
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/910f1b9e-4d09-4456-bc1f-6f5b19c2dc2e)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 10) Fill the Null values
-```Python
-df.fillna(0)
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/a6e1a0ff-84f2-47ae-a39a-f8037875611e)
+```py
+delid=ir[~((ir.sepal_width<(c1-1.5*iq))|(ir.sepal_width>(c3+1.5*iq)))]
+delid
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/25d4d7fb-da49-4a2c-9a34-0021044c7978)
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 11) Finding the mean value
-```Python
-mn=df.TOTAL.mean()
-mn
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/8becd206-ddc7-4a58-85fc-b9cb1b63a53f)
+```py
+sns.boxplot(x='sepal_width',data=delid)
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/53b3e4cc-9961-4b92-af15-afa9dca57f97)
 
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/64878c1f-5842-45e2-9097-2418147f748d)
-
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 12) Fill Null value with Mean value
-```Python
-df.TOTAL.fillna(mn,inplace=True)
+## Z SCORE
+```py
+import matplotlib.pyplot as plt
+import pandas as pd
+import numpy as np
+import scipy.stats as stats
+dataset=pd.read_csv("/content/heights.csv")
+dataset
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-df
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 13) Final output
-```Python
-for x in df.index:
-  if df.loc[x,"AVG"]>100:
-    df.drop(x,inplace=True)
-df
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/65296f84-d620-42a2-91e9-825f3313e72c)
+```py
+df = pd.read_csv("heights.csv")
+q1 = df['height'].quantile(0.25)
+q2 = df['height'].quantile(0.5)
+q3 = df['height'].quantile(0.75)
 ```
-  </td>
-  <td>
-              
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/356a6df0-e9cb-46b1-98c8-11b33712629f)
-
-</td>
-</tr>
-<tr>
-  <td width=50%>
-
-### 14)Cut and paste portion of image
-```Python
-     import cv2
-     image=cv2.imread('Deepika.jpg',1)
-     image=cv2.resize(image,(400,400))
-     tag =image[150:200,110:160]
-     image[110:160,150:200] = tag
-     cv2.imshow('partimage1',image)
-     cv2.waitKey(0)
-     cv2.destroyAllWindows()
+```py
+iqr = q3-q1
+iqr
 ```
-  </td>
-  <td>
-
-#### OUTPUT:
-
-![image](https://github.com/SanjayRagavendar/Data-Cleaning-DataScience/assets/91368803/ea192f39-26da-4c60-bb84-74a7ab8ee6ac)
- </td>
- </tr>
-</table>
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/b9d6b692-7f29-4303-8e22-335186cf6ae3)
+```py
+low = q1 - 1.5*iqr
+low
+```
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/3f341bea-42c2-4cbd-928a-9e1fa576cfaf)
+```py
+high = q3 + 1.5*iqr
+high
+```
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/ae80602f-3344-443c-a723-d5cef7928731)
+```py
+df1 = df[((df['height'] >=low)& (df['height'] <=high))]
+df1
+```
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/3e5ce1e1-567e-4253-82bb-192c04024d35)
+```py
+z = np.abs(stats.zscore(df['height']))
+z
+```
+![image](https://github.com/Yamunaasri/exno1/assets/115707860/ef207f0d-fcc0-452e-bbd3-5f3c48a03515)
 
 # Result
 The data clearning has beeen done successfully.
